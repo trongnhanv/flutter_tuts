@@ -1,5 +1,6 @@
 import 'package:basic_tuts/udemy/shop_app/pages/cart_page.dart';
 import 'package:basic_tuts/udemy/shop_app/pages/orders_page.dart';
+import 'package:basic_tuts/udemy/shop_app/pages/user_products_page.dart';
 import 'package:basic_tuts/udemy/shop_app/providers/orders_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,7 @@ class ShopApp extends StatelessWidget {
                 ),
             CartPage.routeName: (context) => const CartPage(),
             OrdersPage.routeName: (context) => const OrdersPage(),
+            UserProductsPage.routeName: (context) => const UserProductsPage()
           };
           WidgetBuilder? builder = routes[settings.name];
           return MaterialPageRoute(builder: (ctx) => builder!(ctx));
