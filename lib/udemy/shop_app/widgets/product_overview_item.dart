@@ -29,7 +29,6 @@ class ProductOverviewItem extends StatelessWidget {
                   product.isFavourite ? Icons.favorite : Icons.favorite_border,
                   color: Theme.of(context).colorScheme.secondary),
               onPressed: () {
-                // context.read<ProductsProviderV2>().toggleFavourite(product);
                 product.toggleFavourite();
               },
             ),
@@ -46,9 +45,22 @@ class ProductOverviewItem extends StatelessWidget {
                 color: Theme.of(context).colorScheme.secondary,
               ),
               onPressed: () {
-                context
-                    .read<CartProvider>()
-                    .addToCart(product.id, product.title, product.price);
+                var readProvider = context.read<CartProvider>();
+                readProvider.addToCart(
+                    product.id, product.title, product.price);
+
+                var snackbar = SnackBar(
+                  content: const Text('Added to cart successfully'),
+                  duration: const Duration(seconds: 2),
+                  action: SnackBarAction(
+                      label: "Undo",
+                      onPressed: () {
+                        readProvider.removeItemFromCart(product.id);
+                      }),
+                );
+
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(snackbar);
               },
             ),
           ),
