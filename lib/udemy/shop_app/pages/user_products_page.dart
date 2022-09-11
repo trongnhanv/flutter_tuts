@@ -1,3 +1,4 @@
+import 'package:basic_tuts/udemy/shop_app/pages/edit_user_product_page.dart';
 import 'package:basic_tuts/udemy/shop_app/providers/products_provider.dart';
 import 'package:basic_tuts/udemy/shop_app/widgets/app_drawer.dart';
 import 'package:basic_tuts/udemy/shop_app/widgets/user_product_item.dart';
@@ -11,18 +12,29 @@ class UserProductsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var products = context.watch<ProductsProviderV2>().items;
-    print(products);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Products'),
-        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.add))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(EditUserProductPage.routeName,
+                    arguments: const EditUserProductArguments());
+              },
+              icon: const Icon(Icons.add))
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: ListView.builder(
-            itemCount: products.length,
-            itemBuilder: (_, index) =>
-                UserProductItem(product: products[index])),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await context.read<ProductsProviderV2>().loadProducts();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: ListView.builder(
+              itemCount: products.length,
+              itemBuilder: (_, index) =>
+                  UserProductItem(product: products[index])),
+        ),
       ),
       drawer: const AppDrawer(),
     );

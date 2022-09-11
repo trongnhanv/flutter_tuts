@@ -1,4 +1,5 @@
 import 'package:basic_tuts/udemy/shop_app/pages/cart_page.dart';
+import 'package:basic_tuts/udemy/shop_app/providers/products_provider.dart';
 import 'package:basic_tuts/udemy/shop_app/widgets/app_drawer.dart';
 import 'package:basic_tuts/udemy/shop_app/widgets/badge.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,26 @@ class ProductsOverviewPage extends StatefulWidget {
 }
 
 class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
+  bool _isInit = true;
+  bool _isLoading = false;
   FilterOptions _filterOptions = FilterOptions.showAll;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      context.read<ProductsProviderV2>().loadProducts().then((value) {
+        setState(() {
+          _isInit = false;
+          _isLoading = false;
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,9 +71,13 @@ class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
                   value: cartProvider.cartNumber.toString()))
         ],
       ),
-      body: ProductOverviewGrid(
-        onlyFavorite: _filterOptions == FilterOptions.onlyFavourites,
-      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProductOverviewGrid(
+              onlyFavorite: _filterOptions == FilterOptions.onlyFavourites,
+            ),
       drawer: const AppDrawer(),
     );
   }

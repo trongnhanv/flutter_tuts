@@ -1,12 +1,19 @@
+import 'package:basic_tuts/udemy/shop_app/utils/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../pages/product_detail_page.dart';
 import '../providers/product_provider.dart';
 import '../providers/cart_provider.dart';
 
-class ProductOverviewItem extends StatelessWidget {
+class ProductOverviewItem extends StatefulWidget {
   const ProductOverviewItem({Key? key}) : super(key: key);
 
+  @override
+  State<ProductOverviewItem> createState() => _ProductOverviewItemState();
+}
+
+class _ProductOverviewItemState extends State<ProductOverviewItem> {
+  bool _loading = false;
   @override
   Widget build(BuildContext context) {
     var product = context.watch<ProductProvider>();
@@ -24,14 +31,27 @@ class ProductOverviewItem extends StatelessWidget {
           ),
           footer: GridTileBar(
             backgroundColor: Colors.black87,
-            leading: IconButton(
-              icon: Icon(
-                  product.isFavourite ? Icons.favorite : Icons.favorite_border,
-                  color: Theme.of(context).colorScheme.secondary),
-              onPressed: () {
-                product.toggleFavourite();
-              },
-            ),
+            leading: _loading
+                ? const CircularProgressIndicator()
+                : IconButton(
+                    icon: Icon(
+                        product.isFavourite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: Theme.of(context).colorScheme.secondary),
+                    onPressed: () {
+                      setState(() {
+                        _loading = true;
+                      });
+                      product.toggleFavourite().catchError((e) {
+                        showSnackBar(context, 'Something went wrong!');
+                      }).whenComplete(() {
+                        setState(() {
+                          _loading = false;
+                        });
+                      });
+                    },
+                  ),
             title: FittedBox(
               child: Text(
                 product.title,

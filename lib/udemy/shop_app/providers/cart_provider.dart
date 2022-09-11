@@ -18,6 +18,21 @@ class CartItem {
     this.quantity = quantity;
     return this;
   }
+
+  Map<String, dynamic> get bodyData {
+    return {
+      'id': id,
+      'title': title,
+      'price': price,
+      'quantity': quantity,
+    };
+  }
+
+  CartItem.fromJson(Map<String, dynamic> values)
+      : id = values['id'],
+        title = values['title'],
+        price = values['price'],
+        quantity = values['quantity'];
 }
 
 class CartProvider with ChangeNotifier {
