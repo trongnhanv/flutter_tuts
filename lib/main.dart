@@ -1,8 +1,8 @@
-import 'package:basic_tuts/udemy/shop_app/app.dart';
+import 'package:basic_tuts/udemy/great_places_app/app.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const ShopApp());
+  runApp(const GreatPlacesApp());
 }
 
 class FlexibleZ extends MaterialApp {
