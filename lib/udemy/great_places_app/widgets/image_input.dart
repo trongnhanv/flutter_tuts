@@ -2,16 +2,55 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart' as systemPath;
 
 class ImageInput extends StatefulWidget {
-  const ImageInput({Key? key}) : super(key: key);
+  final void Function(File image) onSelectImage;
+  const ImageInput({Key? key, required this.onSelectImage}) : super(key: key);
 
   @override
   State<ImageInput> createState() => _ImageInputState();
 }
 
 class _ImageInputState extends State<ImageInput> {
+  final ImagePicker _picker = ImagePicker();
   File? _file;
+
+  Future<void> _copyFile(File file) {
+    return systemPath.getApplicationDocumentsDirectory().then((value) {
+      var filename = path.basename(file.path);
+      file.copy('${value.path}/$filename');
+    });
+  }
+
+  void _handleSelectImage(XFile? value) {
+    if (value == null) {
+      return;
+    }
+    File converFile = File(value.path);
+    setState(() {
+      _file = converFile;
+    });
+    widget.onSelectImage(converFile);
+  }
+
+  Future<void> _handleCamera() {
+    return _picker
+        .pickImage(source: ImageSource.camera, maxWidth: 600)
+        .then((value) {
+      _handleSelectImage(value);
+    });
+  }
+
+  Future<void> _handleGallery() {
+    return _picker
+        .pickImage(source: ImageSource.gallery, maxWidth: 600)
+        .then((value) {
+      print(value);
+      _handleSelectImage(value);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +85,14 @@ class _ImageInputState extends State<ImageInput> {
                             TextButton.icon(
                                 onPressed: () async {
                                   Navigator.of(_).pop(false);
-                                  var _file = ImagePicker()
-                                    ..pickImage(source: ImageSource.gallery);
+                                  _handleGallery();
                                 },
                                 icon: const Icon(Icons.image),
                                 label: const Text('Pick a image')),
                             TextButton.icon(
-                                onPressed: () async {
+                                onPressed: () {
                                   Navigator.of(_).pop(false);
-                                  var _file = ImagePicker()
-                                    ..pickImage(source: ImageSource.camera);
+                                  _handleCamera();
                                 },
                                 icon: const Icon(Icons.camera_alt),
                                 label: const Text('Capture a photo'))
